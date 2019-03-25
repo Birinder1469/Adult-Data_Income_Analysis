@@ -47,18 +47,56 @@ data['target']=np.where(data['income_class']==data.income_class[1] , 0,1)
 # In[3]:
 
 
-# Data type and size 
-data.info()
+data.head()
 
 
 # In[4]:
 
 
-##### There are 32651 entries/rows for each 16 columns. The Target column contains the binary class of people above or 
-##### below $50k. Our analysis is based on evaluating given other parameters what is the Income class for the prrson.
+# Data type and size 
+data.info()
 
 
 # In[5]:
+
+
+##### There are 32651 entries/rows for each 16 columns. The Target column contains the binary class of people above or 
+##### below $50k. Our analysis is based on evaluating given other parameters what is the Income class for the person.
+
+
+# In[6]:
+
+
+from IPython.display import display_html
+
+def display_side_by_side(*args):
+    html_str=''
+    for df in args:
+        html_str+=df.to_html()
+    display_html(html_str.replace('table','table style="display:inline"'),raw=True)
+  
+
+column=[ 'workclass', 'education', 'education-num',
+       'marital-status', 'occupation', 'relationship', 'race', 'native-country',
+       'income_class', 'target']
+  
+df1=pd.DataFrame({'Occupation':data.occupation.unique()})
+
+df2=pd.DataFrame({'Workclass':data.workclass.unique()})
+
+education_df=pd.DataFrame({'Education_Label':data.education.unique(), 'Education_Number':data['education-num'].unique()})
+
+df4=pd.DataFrame({'Relationship':data.relationship.unique()})
+
+df5=pd.DataFrame({'Race':data.race.unique()})
+
+df6=pd.DataFrame({'Income_Class':data.income_class.unique()})
+
+print('The categories for each column are as follows :  ')
+display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6)
+
+
+# In[7]:
 
 
 # checking the education related information 
@@ -71,7 +109,7 @@ print('\n The Numeric values assigned to each education level : ')
 education_df.sort_values(by='Education_Number')
 
 
-# In[6]:
+# In[8]:
 
 
 ##### I notice that each education level is asigned a corresponsing numeric value which is increasing order of level of 
@@ -81,7 +119,7 @@ education_df.sort_values(by='Education_Number')
 
 # ### Check how much data we have for each category in the dataset  
 
-# In[7]:
+# In[9]:
 
 
 # Visualization of the available data 
@@ -105,7 +143,7 @@ for i in list_1:
         data[i].value_counts().plot(kind='bar',color='green',alpha=0.8)
         plt.title('Counts of each level of '+ i)
         plt.grid()
-
+plt.savefig('Data_available_1.png', dpi=600, bbox_inches='tight')
 plt.tight_layout()
 
 plt.figure(figsize=(40, 13))
@@ -115,12 +153,13 @@ data['native-country'].value_counts().plot(kind='bar',alpha=0.8, color='green')
 plt.title('Counts of each native country')
 plt.grid()
 plt.tight_layout()
+plt.savefig('Data_available.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
 # # Figure A (above)
 
-# In[8]:
+# In[10]:
 
 
 (data==' ?').any()
@@ -128,7 +167,7 @@ plt.show()
 
 # > I notice some '?' in workclass and native country and occupation level. We will remove them eventually. 
 
-# In[9]:
+# In[11]:
 
 
 remove=['native-country','occupation','workclass']
@@ -136,20 +175,20 @@ for i in remove :
     data.drop(data.loc[data[i]==' ?'].index,inplace=True)
 
 
-# In[10]:
+# In[12]:
 
 
 data.info()
 
 
-# In[11]:
+# In[13]:
 
 
 ##### We have lost around 2399 rows. '?' were mostly in the occupation column 
 ##### but i would not be guessing some random occupation to fill in the '?' hence i am okay with removing these entries.
 
 
-# In[12]:
+# In[14]:
 
 
 ##### The target variable contains around 22600 entries for the category of people earning <$50k and around 
@@ -159,7 +198,7 @@ data.info()
 
 # ### How many people are above 50k range in each category 
 
-# In[13]:
+# In[15]:
 
 
 categories= ['education', 'workclass', 'marital-status', 'occupation', 'relationship','sex','race']
@@ -176,7 +215,7 @@ for cat in categories:
     plt.xlabel('')
     plt.ylabel('Proportion')
     plt.title('Proportion with >50k income per '+ cat)
-   
+plt.savefig('Analysis_Income_prediction_1.png', dpi=600, bbox_inches='tight')   
     
 plt.rc('font', size=12)
 plt.figure(figsize=(40, 15))
@@ -185,12 +224,13 @@ data.groupby('native-country').mean()['target'].plot(kind='bar',color='green',al
 plt.rc('font', size=12)
 plt.grid()
 plt.tight_layout()
+plt.savefig('Analysis_Income_prediction.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
 # # Figure B (above)
 
-# In[14]:
+# In[16]:
 
 
 # Education 
@@ -199,7 +239,7 @@ plt.show()
 # Lets investigate who among low education levels are wealthy what they do how come they can earn so much at such young age 
 
 
-# In[15]:
+# In[17]:
 
 
 fig = plt.figure(figsize=(15, 5))
@@ -210,22 +250,23 @@ data[np.logical_and(data['education-num']<=8,
 plt.title('Wealthy with education less than 12th Standard based on work profile ')
 plt.ylabel('Number of people >$50k')
 plt.grid()
+plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches='tight')
 
 
-# In[16]:
+# In[18]:
 
 
 ##### Most of the people with education level less than 12th standard work in Private jobs 
 
 
-# In[17]:
+# In[19]:
 
 
 # Work class
 ##### The Self employed people have a higher proportion of being rich (>50k $) followed by people working in Federal jobs
 
 
-# In[18]:
+# In[20]:
 
 
 # Marital Status 
@@ -233,7 +274,7 @@ plt.grid()
 ##### containes very few entries for Armed force category hence we wont consider them as much of a valid observation 
 
 
-# In[19]:
+# In[21]:
 
 
 # Occupation 
@@ -241,7 +282,7 @@ plt.grid()
 ##### Some of the job categories such as Clerical jobs, farming fishing and Cleaners and handlers are not that much paid.
 
 
-# In[20]:
+# In[22]:
 
 
 # Relation ship 
@@ -250,14 +291,14 @@ plt.grid()
 ##### because of which the proportion is a little misleading 
 
 
-# In[21]:
+# In[23]:
 
 
 # Gender 
 ##### The proportion of males with high income is more than the females 
 
 
-# In[22]:
+# In[24]:
 
 
 # Native Country 
@@ -268,7 +309,7 @@ plt.grid()
 
 # ### Checking Distribution of income among different age groups 
 
-# In[23]:
+# In[25]:
 
 
 fig = plt.figure(figsize=(15, 6))
@@ -281,10 +322,11 @@ ax.set(yticklabels=['<=50k($)','>50k($)'])
 plt.ylabel('Income groups')
 plt.setp(ax.collections, alpha=.3)
 plt.title('Distribution of income among different Age groups ')
+plt.savefig('Analysis_Income_predictionAge.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-# In[24]:
+# In[26]:
 
 
 # Income vs Age 
@@ -293,7 +335,7 @@ plt.show()
 ##### to the employment 
 
 
-# In[25]:
+# In[27]:
 
 
 fig = plt.figure(figsize=(40, 20))
@@ -301,9 +343,11 @@ ax=sns.catplot(y="target", x="hours-per-week", data=data.loc[:,['hours-per-week'
 plt.title('Work hours per week vs Income group ')
 plt.ylabel('Income Group')
 plt.grid()
+#plt.savefig('Analysis_Income_prediction_workhours.png', dpi=100, width=20, height=10)
+ax.savefig("Analysis_Income_prediction_workhours.png")
 
 
-# In[26]:
+# In[28]:
 
 
 # Hours per week
@@ -311,7 +355,7 @@ plt.grid()
 ##### This goes up to 100 as well but there are less of such peopl.
 
 
-# In[27]:
+# In[29]:
 
 
 # Race 
@@ -320,7 +364,7 @@ plt.grid()
 ##### data ~28% Asian Pac Islander earn greater than $50k
 
 
-# In[28]:
+# In[30]:
 
 
 data_gain_loss=data.loc[:,['capital-gain',
@@ -331,13 +375,13 @@ data_gain_loss.head()
 
 # # Model fitting data preparation  
 
-# In[29]:
+# In[31]:
 
 
 # Converting the object variable types to integer for further analysis
 
 
-# In[30]:
+# In[32]:
 
 
 header_list=['age','workclass','fnlwgt','education','education-num','marital-status',
@@ -351,7 +395,7 @@ train_data['income_class']=train_data['income_class'].astype('str')
 print('Shape of Train dataset is : ', train_data.shape)
 
 
-# In[31]:
+# In[33]:
 
 
 test_data=pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test',
@@ -361,26 +405,26 @@ test_data.head(2)
 print('Shape of Test dataset is : ',test_data.shape)
 
 
-# In[32]:
+# In[34]:
 
 
 test_data.income_class.unique()
 
 
-# In[33]:
+# In[35]:
 
 
 data=pd.concat([train_data,test_data])
 
 
-# In[34]:
+# In[36]:
 
 
 # Assigning Male and Females : 1 and 0 Integer Values
 data['sex']=data['sex'].map({' Male':1,' Female':0}).astype(int)
 
 
-# In[35]:
+# In[37]:
 
 
 # Data set is skewed towards White race hence two categories look ok. 1 for White and 0 for the rest.
@@ -388,7 +432,7 @@ data['race']=data['race'].map({' White':1,' Black':0, ' Asian-Pac-Islander':0, '
        ' Other':0}).astype(int)
 
 
-# In[36]:
+# In[38]:
 
 
 # The income range looks distinct for students upto standard 12th education, then Associates and then people with 
@@ -408,14 +452,14 @@ data['education']=data['education'].map({'Lower_Edu':0,'Middle_Edu':1,'Higher_Ed
     
 
 
-# In[37]:
+# In[39]:
 
 
 # All the native United States belong to category 1 and the rest belong to 0
 data['native-country']=np.where(data['native-country']==' United-States', 1, 0).astype(int)
 
 
-# In[38]:
+# In[40]:
 
 
 # The people working in government belong to category 2, those involved in Private jobs have category 0 and rest of them
@@ -430,7 +474,7 @@ data["workclass"] = data["workclass"].replace([' Self-emp-not-inc', ' Self-emp-i
 data["workclass"] = data["workclass"].map({" Private":0, "Self":1, "Gov":2, ' ?':-1}).astype(int)
 
 
-# In[39]:
+# In[41]:
 
 
 # Assigning the categories to the occupations. Some occupations are believed to be earning high so i assigned 
@@ -451,7 +495,7 @@ data["occupation"] = data["occupation"].replace([' Priv-house-serv', ' Farming-f
 data["occupation"] = data["occupation"].map({"LowPay":0, "MiddlePay":1, "HighPay":2, ' ?':-1}).astype(int)
 
 
-# In[40]:
+# In[42]:
 
 
 # For the marital status i have assigned three categories. The unmarried people. The people in marriage and 
@@ -468,13 +512,13 @@ data["marital-status"] = data["marital-status"].replace([' Divorced', ' Married-
 data["marital-status"] = data["marital-status"].map({"Single":0, "Couple":1, "Separated":2}).astype(int)
 
 
-# In[41]:
+# In[43]:
 
 
 data.shape
 
 
-# In[42]:
+# In[44]:
 
 
 
@@ -482,18 +526,6 @@ data['income_class']=data['income_class'].replace([' <=50K', ' <=50K.'],'<=50K')
 data['income_class']=data['income_class'].replace([' >50K',  ' >50K.'],'>50K')
 
 data["income_class"] = data["income_class"].map({'>50K':1, '<=50K':0}).astype(int)
-
-
-# In[43]:
-
-
-data.head()
-
-
-# In[44]:
-
-
-data=data.drop(['fnlwgt', 'relationship','education-num'], axis=1);
 
 
 # In[45]:
@@ -505,18 +537,30 @@ data.head()
 # In[46]:
 
 
+data=data.drop(['fnlwgt', 'relationship','education-num'], axis=1);
+
+
+# In[47]:
+
+
+data.head()
+
+
+# In[48]:
+
+
 # I will use this train data for the model building
 train_dataset=data.iloc[0:32561,]
 
 
-# In[47]:
+# In[49]:
 
 
 # I Will keep this test dataset aside 
 test_dataset=data.iloc[32561:48842,]
 
 
-# In[48]:
+# In[50]:
 
 
 ##### For doing the further analysis i am thinking of removing the predictors which are not very insightful.
@@ -527,14 +571,14 @@ test_dataset=data.iloc[32561:48842,]
 ##### are redundant for model fitting atleast hence i am removing the education column.
 
 
-# In[49]:
+# In[51]:
 
 
 X=train_dataset.drop(['income_class'],axis=1)
 y=train_dataset['income_class']
 
 
-# In[50]:
+# In[52]:
 
 
 # Split the remaining data in 80:20 ratio for train and validation datasets
@@ -542,7 +586,7 @@ np.random.seed(123)
 X_train,X_valid,y_train, y_valid = train_test_split(X,y,test_size=0.2)
 
 
-# In[51]:
+# In[53]:
 
 
 ##### Since its a binary classification problem I will use the following models to predict the classes. 
@@ -557,7 +601,7 @@ X_train,X_valid,y_train, y_valid = train_test_split(X,y,test_size=0.2)
 ##### After the final model is chosen, I will check the performance on Test Data.
 
 
-# In[52]:
+# In[54]:
 
 
 # Creating X_test and y_test for final check on the model 
@@ -567,7 +611,7 @@ y_test=test_dataset['income_class']
 
 # ### Random Forest Classifier
 
-# In[53]:
+# In[55]:
 
 
 model=RandomForestClassifier()
@@ -578,7 +622,7 @@ print('The Validation score is : ',"{00:.2f}%".format(round(model.score(X_valid,
 print('The Test score is : ',"{00:.2f}%".format(round(model.score(X_test, y_test),4)*100))
 
 
-# In[54]:
+# In[56]:
 
 
 # Applying Randomized search to find the optimum parameters 
@@ -593,7 +637,7 @@ model_grid.fit(X_train,y_train)
 print('The Best Features for Random Forest Are : ',model_grid.best_params_)
 
 
-# In[55]:
+# In[57]:
 
 
 model_best=RandomForestClassifier(max_features=8, max_depth=11, random_state=123)
@@ -608,7 +652,7 @@ valid_acc_rf="{00:.2f}%".format(round(model_best.score(X_valid, y_valid),4)*100)
 test_acc_rf="{00:.2f}%".format(round(model_best.score(X_test, y_test),4)*100)
 
 
-# In[56]:
+# In[58]:
 
 
 # There is improvement in the Test Accuracy from 84.12% to 86.25% which is good sign that our hyper parameter selection 
@@ -617,14 +661,14 @@ test_acc_rf="{00:.2f}%".format(round(model_best.score(X_test, y_test),4)*100)
 
 # ### Logistic regression accuracy 
 
-# In[57]:
+# In[59]:
 
 
 model_lr=LogisticRegression()
 model_lr.fit(X_train,y_train)
 
 
-# In[58]:
+# In[60]:
 
 
 print('The train score is : ', "{00:.2f}%".format(round(model_lr.score(X_train, y_train),4)*100))
@@ -632,7 +676,7 @@ print('The Validation score is : ',"{00:.2f}%".format(round(model_lr.score(X_val
 print('The Test score is : ',"{00:.2f}%".format(round(model_lr.score(X_test, y_test),4)*100))
 
 
-# In[59]:
+# In[61]:
 
 
 param_dist = dict({'C' : np.logspace(-3,3,7), "penalty":["l1","l2"]})
@@ -645,7 +689,7 @@ model_grid_lr.fit(X_train,y_train)
 print('The Best Features for Logistic Regression are : ',model_grid_lr.best_params_)
 
 
-# In[60]:
+# In[62]:
 
 
 model_lr_best=LogisticRegression(C=10.0, penalty='l1')
@@ -661,7 +705,7 @@ test_acc_lr="{00:.2f}%".format(round(model_lr_best.score(X_test, y_test),4)*100)
 
 # ### XG Boost 
 
-# In[61]:
+# In[63]:
 
 
 model_xgb=XGBClassifier(n_estimators=30,booster='gbtree')
@@ -670,7 +714,7 @@ parameters_xgb=dict({'max_depth':np.arange(1,30), 'learning_rate':np.arange(0,1,
 model_xgb_rs=RandomizedSearchCV(model_xgb,parameters_xgb,cv=5,n_iter=20,n_jobs=-1, random_state=123)
 
 
-# In[62]:
+# In[64]:
 
 
 model_xgb_rs.fit(X_train,y_train)
@@ -678,7 +722,7 @@ model_xgb_rs.fit(X_train,y_train)
 print('The best parameters for XG Boost are : ',model_xgb_rs.best_params_ )
 
 
-# In[63]:
+# In[65]:
 
 
 model_xgb_best=XGBClassifier(learning_rate=0.85, max_depth=4, n_estimators=30, booster='gbtree', random_state=123)
@@ -692,17 +736,113 @@ valid_acc_xgb="{00:.2f}%".format(round(model_xgb_best.score(X_valid, y_valid),4)
 test_acc_xgb="{00:.2f}%".format(round(model_xgb_best.score(X_test, y_test),4)*100)
 
 
-# In[64]:
+# In[66]:
 
 
 # Final Model Scores 
 
 
-# In[65]:
+# In[67]:
 
 
 pd.DataFrame({'Model':['Random Forest','Logistic Regression','XGBoost'], 
              'Train Accuracy':[train_acc_rf,train_acc_lr,train_acc_xgb], 
               'Test Accuracy':[test_acc_rf,test_acc_lr,test_acc_xgb],
               'Validation Accuracy':[valid_acc_rf,valid_acc_lr,valid_acc_xgb]})
+
+
+# In[68]:
+
+
+# Since the XGBoost seems to be performing the best but it is trouble some to put it on the Heroki platform hence for now 
+# I will go with the Randome Forest which is doing good as well.
+
+
+# ### Combining the datasets from Train Test and Validation to train the model on the entire data set
+
+# In[69]:
+
+
+print('The shape of X_train ',X_train.shape)
+print('The shape of X_test ',X_test.shape)
+print('The shape of X_validation ',X_valid.shape)
+
+
+# In[70]:
+
+
+Entire_X=pd.concat([X_train,X_valid,X_test])
+Entire_y=pd.concat([y_train,y_valid,y_test])
+
+
+# In[71]:
+
+
+# Training the Random Forest model on the Entire Dataset
+
+model_best=RandomForestClassifier(max_features=8, max_depth=11, random_state=123)
+model_best.fit(Entire_X,Entire_y)
+
+
+# In[72]:
+
+
+with open('columns.json', 'w') as fh:
+    json.dump(Entire_X.columns.tolist(), fh)
+
+
+# In[73]:
+
+
+with open('dtypes.pickle', 'wb') as fh:
+    pickle.dump(Entire_X.dtypes, fh)
+
+
+# In[74]:
+
+
+from sklearn.externals import joblib
+joblib.dump(model_best, 'model.pickle')
+
+
+# In[75]:
+
+
+with open('columns.json', 'r') as fh:
+    columns = json.load(fh)
+
+
+# In[76]:
+
+
+with open('dtypes.pickle', 'rb') as fh:
+    dtypes = pickle.load(fh)
+
+
+# In[77]:
+
+
+pipeline = joblib.load('model.pickle')
+
+
+# In[78]:
+
+
+new_obs_str = '{"age": 19, "workclass":0 , "education": 1, "marital-status": 0, "occupation": 1, "race": 1, "sex": 0, "capital-gain": 0,"capital-loss":0,"hours-per-week":25,"native-country":1}'
+new_obs_dict = json.loads(new_obs_str)
+obs = pd.DataFrame([new_obs_dict], columns=columns)
+obs = obs.astype(dtypes)
+
+
+# In[79]:
+
+
+obs
+
+
+# In[80]:
+
+
+outcome = pipeline.predict_proba(obs)
+outcome
 
