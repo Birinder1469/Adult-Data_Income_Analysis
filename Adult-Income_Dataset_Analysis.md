@@ -264,8 +264,6 @@ df7=pd.DataFrame({'Sex':data.sex.unique()})
 df8=pd.DataFrame({'Income_Class':data.income_class.unique()})
 
 
-
-
 print('The categories for each feature are as follows :  ')
 display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6,df7,df8)
 
@@ -808,81 +806,8 @@ plt.show()
 
 
 ```python
-(data==' ?').any()
-```
-
-
-
-
-    age               False
-    workclass          True
-    fnlwgt            False
-    education         False
-    education-num     False
-    marital-status    False
-    occupation         True
-    relationship      False
-    race              False
-    sex               False
-    capital-gain      False
-    capital-loss      False
-    hours-per-week    False
-    native-country     True
-    income_class      False
-    target            False
-    dtype: bool
-
-
-
-> I notice some '?' in workclass and native country and occupation level. We will remove them eventually. 
-
-
-```python
-# Remove the ? entries from the specific columns 
-
-remove=['native-country','occupation','workclass']
-for i in remove :
-    data.drop(data.loc[data[i]==' ?'].index,inplace=True)
-```
-
-
-```python
-data.info()
-```
-
-    <class 'pandas.core.frame.DataFrame'>
-    Int64Index: 30162 entries, 0 to 32560
-    Data columns (total 16 columns):
-    age               30162 non-null int64
-    workclass         30162 non-null object
-    fnlwgt            30162 non-null int64
-    education         30162 non-null object
-    education-num     30162 non-null int64
-    marital-status    30162 non-null object
-    occupation        30162 non-null object
-    relationship      30162 non-null object
-    race              30162 non-null object
-    sex               30162 non-null object
-    capital-gain      30162 non-null int64
-    capital-loss      30162 non-null int64
-    hours-per-week    30162 non-null int64
-    native-country    30162 non-null object
-    income_class      30162 non-null object
-    target            30162 non-null int32
-    dtypes: int32(1), int64(6), object(9)
-    memory usage: 3.8+ MB
-    
-
-
-```python
-##### We have lost around 2399 rows. '?' were mostly in the occupation column 
-##### but i would not be guessing some random occupation to fill in the '?' hence i am okay with removing these entries.
-```
-
-
-```python
-##### The target variable contains around 22600 entries for the category of people earning <=$50k and around 
-##### 7500 entries of people earning moer than $50k. This is important observation indicating that our datset is biased
+##### The target variable contains around 24720 entries for the category of people earning <=$50k and around 
+##### 7841 entries of people earning more than $50k. This is important observation indicating that our datset is biased
 ##### towards people earning less than $50k.
 ```
 
@@ -919,11 +844,11 @@ plt.show()
 ```
 
 
-![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_20_0.png)
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_15_0.png)
 
 
 
-![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_20_1.png)
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_15_1.png)
 
 
 # Figure B (above)
@@ -953,7 +878,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ```
 
 
-![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_23_0.png)
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_18_0.png)
 
 
 
@@ -1011,6 +936,14 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### Again its worth noting that the data for each of these countries is too less to make a sane judgement. 
 ```
 
+
+```python
+# Race 
+##### We notice that we have too little data for races other than White(Figure A). Even then if we try to compare the proportions of each race 
+##### are earning well (>$50k). For the whites ~ 26% people are earning >\$50k while from the available data ~28% Asian Pac Islander 
+##### earn greater than \$50k
+```
+
 ### Checking Distribution of income among different age groups 
 
 
@@ -1030,7 +963,7 @@ plt.show()
 ```
 
 
-![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_33_0.png)
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_29_0.png)
 
 
 
@@ -1064,7 +997,7 @@ ax.savefig("Analysis_Income_prediction_workhours.png")
 
 
 
-![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_36_1.png)
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_32_1.png)
 
 
 

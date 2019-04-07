@@ -3,7 +3,7 @@
 
 # # Exploratory Data Analysis - Adult Income Dataset 
 
-# In[146]:
+# In[2]:
 
 
 # Data exploration libraries
@@ -31,7 +31,7 @@ import json
 warnings.filterwarnings("ignore")
 
 
-# In[147]:
+# In[3]:
 
 
 # load Training data 
@@ -50,13 +50,13 @@ data['target']=np.where(data['income_class']==data.income_class[1] , 0,1)
 # ## ` Income <= 50k has been labelled as 0`
 # ## ` Income > 50k has been labelled as 1`<br>
 
-# In[148]:
+# In[4]:
 
 
 data.head()
 
 
-# In[149]:
+# In[5]:
 
 
 # Data type and size
@@ -71,7 +71,7 @@ data.info()
 # #### The Target column contains the binary class of people above or below $50k.
 # #### Our analysis is based on evaluating given other parameters what is the Income class for the person. <br><br><br>
 
-# In[151]:
+# In[6]:
 
 
 from IPython.display import display_html
@@ -85,7 +85,7 @@ def display_side_by_side(*args):
 
 column=[ 'workclass', 'education', 'education-num',
        'marital-status', 'occupation', 'relationship', 'race', 'native-country',
-       'income_class', 'target']
+       'income_class', 'marital-status','target']
   
 df1=pd.DataFrame({'Occupation':data.occupation.unique()})
 
@@ -97,10 +97,15 @@ df4=pd.DataFrame({'Relationship':data.relationship.unique()})
 
 df5=pd.DataFrame({'Race':data.race.unique()})
 
-df6=pd.DataFrame({'Income_Class':data.income_class.unique()})
+df6=pd.DataFrame({'Marital-Status':data['marital-status'].unique()})
 
-print('The categories for each column are as follows :  ')
-display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6)
+df7=pd.DataFrame({'Sex':data.sex.unique()})
+
+df8=pd.DataFrame({'Income_Class':data.income_class.unique()})
+
+
+print('The categories for each feature are as follows :  ')
+display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6,df7,df8)
 
 
 # In[7]:
@@ -126,7 +131,7 @@ education_df.sort_values(by='Education_Number')
 
 # ### Check how much data we have for each category in the dataset  
 
-# In[9]:
+# In[8]:
 
 
 # Visualization of the available data 
@@ -167,48 +172,17 @@ plt.show()
 
 # # Figure A (above)
 
-# In[10]:
-
-
-(data==' ?').any()
-
-
-# > I notice some '?' in workclass and native country and occupation level. We will remove them eventually. 
-
-# In[11]:
-
-
-# Remove the ? entries from the specific columns 
-
-remove=['native-country','occupation','workclass']
-for i in remove :
-    data.drop(data.loc[data[i]==' ?'].index,inplace=True)
-
-
-# In[12]:
-
-
-data.info()
-
-
 # In[13]:
 
 
-##### We have lost around 2399 rows. '?' were mostly in the occupation column 
-##### but i would not be guessing some random occupation to fill in the '?' hence i am okay with removing these entries.
-
-
-# In[14]:
-
-
-##### The target variable contains around 22600 entries for the category of people earning <=$50k and around 
-##### 7500 entries of people earning moer than $50k. This is important observation indicating that our datset is biased
+##### The target variable contains around 24720 entries for the category of people earning <=$50k and around 
+##### 7841 entries of people earning more than $50k. This is important observation indicating that our datset is biased
 ##### towards people earning less than $50k.
 
 
 # ### How many people are above 50k range in each category 
 
-# In[15]:
+# In[14]:
 
 
 categories= ['education', 'workclass', 'marital-status', 'occupation', 'relationship','sex','race']
@@ -240,7 +214,7 @@ plt.show()
 
 # # Figure B (above)
 
-# In[152]:
+# In[15]:
 
 
 # Education 
@@ -251,7 +225,7 @@ plt.show()
 ##### what is the occupation for by which these people earn >50k at such young age 
 
 
-# In[17]:
+# In[16]:
 
 
 fig = plt.figure(figsize=(15, 5))
@@ -259,7 +233,7 @@ fig = plt.figure(figsize=(15, 5))
 data[np.logical_and(data['education-num']<=8,
                     data['target']==1)].groupby('workclass').count()['age'].plot(kind='bar',
                                                                                  color='green',alpha=0.8)
-plt.title('Wealthy with education less than 12th Standard based on work profile ')
+plt.title('Work profile for people earning >50k with education less than 12th Standard')
 plt.ylabel('Number of people >$50k')
 plt.grid()
 plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches='tight')
@@ -325,6 +299,15 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### As we saw above the data for United states natives is overwhelmingly higher than other countries. 
 ##### The proportion of people who got wealthy (>$50k) from different natives is very high for France, Taiwan, Iran. 
 ##### Again its worth noting that the data for each of these countries is too less to make a sane judgement. 
+
+
+# In[ ]:
+
+
+# Race 
+##### We notice that we have too little data for races other than White(Figure A). Even then if we try to compare the proportions of each race 
+##### are earning well (>$50k). For the whites ~ 26% people are earning >\$50k while from the available data ~28% Asian Pac Islander 
+##### earn greater than \$50k
 
 
 # ### Checking Distribution of income among different age groups 
@@ -933,26 +916,38 @@ with open('dtypes.pickle', 'rb') as fh:
 pipeline = joblib.load('model.pickle')
 
 
-# In[78]:
+# In[262]:
 
 
-new_obs_str = '{"age": 19, "workclass":0 , "education": 1, "marital-status": 0, "occupation": 1, "race": 1, "sex": 0, "capital-gain": 0,"capital-loss":0,"hours-per-week":25,"native-country":1}'
+new_obs_str = '{"age": 28, "workclass":0 , "education": 2, "marital-status": 1, "occupation": 2, "race": 0, "sex": 1, "capital-gain": 3000,"capital-loss":0,"hours-per-week":50,"native-country":0}'
 new_obs_dict = json.loads(new_obs_str)
 obs = pd.DataFrame([new_obs_dict], columns=columns)
 obs = obs.astype(dtypes)
 
 
-# In[79]:
+# In[263]:
 
 
 obs
 
 
-# In[80]:
+# In[264]:
+
+
+model_best.predict(obs)
+
+
+# In[265]:
 
 
 outcome = pipeline.predict_proba(obs)
 outcome
+
+
+# In[257]:
+
+
+X_train.head()
 
 
 # # The model is deployed on the Heroku Cloud platform which you can use 
