@@ -245,7 +245,7 @@ def display_side_by_side(*args):
 
 column=[ 'workclass', 'education', 'education-num',
        'marital-status', 'occupation', 'relationship', 'race', 'native-country',
-       'income_class', 'target']
+       'income_class', 'marital-status','target']
   
 df1=pd.DataFrame({'Occupation':data.occupation.unique()})
 
@@ -257,14 +257,21 @@ df4=pd.DataFrame({'Relationship':data.relationship.unique()})
 
 df5=pd.DataFrame({'Race':data.race.unique()})
 
-df6=pd.DataFrame({'Income_Class':data.income_class.unique()})
+df6=pd.DataFrame({'Marital-Status':data['marital-status'].unique()})
 
-print('The categories for each column are as follows :  ')
-display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6)
+df7=pd.DataFrame({'Sex':data.sex.unique()})
+
+df8=pd.DataFrame({'Income_Class':data.income_class.unique()})
+
+
+
+
+print('The categories for each feature are as follows :  ')
+display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6,df7,df8)
 
 ```
 
-    The categories for each column are as follows :  
+    The categories for each feature are as follows :  
     
 
 
@@ -532,6 +539,60 @@ display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df
     <tr>
       <th>4</th>
       <td>Other</td>
+    </tr>
+  </tbody>
+</table style="display:inline"><table style="display:inline" border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Marital-Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Never-married</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Married-civ-spouse</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Divorced</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Married-spouse-absent</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Separated</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Married-AF-spouse</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Widowed</td>
+    </tr>
+  </tbody>
+</table style="display:inline"><table style="display:inline" border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Sex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Male</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Female</td>
     </tr>
   </tbody>
 </table style="display:inline"><table style="display:inline" border="1" class="dataframe">
@@ -884,7 +945,7 @@ fig = plt.figure(figsize=(15, 5))
 data[np.logical_and(data['education-num']<=8,
                     data['target']==1)].groupby('workclass').count()['age'].plot(kind='bar',
                                                                                  color='green',alpha=0.8)
-plt.title('Wealthy with education less than 12th Standard based on work profile ')
+plt.title('Work profile for people earning >50k with education less than 12th Standard')
 plt.ylabel('Number of people >$50k')
 plt.grid()
 plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches='tight')
@@ -2109,7 +2170,7 @@ pipeline = joblib.load('model.pickle')
 
 
 ```python
-new_obs_str = '{"age": 19, "workclass":0 , "education": 1, "marital-status": 0, "occupation": 1, "race": 1, "sex": 0, "capital-gain": 0,"capital-loss":0,"hours-per-week":25,"native-country":1}'
+new_obs_str = '{"age": 28, "workclass":0 , "education": 2, "marital-status": 1, "occupation": 2, "race": 0, "sex": 1, "capital-gain": 3000,"capital-loss":0,"hours-per-week":50,"native-country":0}'
 new_obs_dict = json.loads(new_obs_str)
 obs = pd.DataFrame([new_obs_dict], columns=columns)
 obs = obs.astype(dtypes)
@@ -2157,21 +2218,33 @@ obs
   <tbody>
     <tr>
       <th>0</th>
-      <td>19</td>
+      <td>28</td>
+      <td>0</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
       <td>0</td>
       <td>1</td>
+      <td>3000</td>
       <td>0</td>
-      <td>1</td>
-      <td>1</td>
+      <td>50</td>
       <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>25</td>
-      <td>1</td>
     </tr>
   </tbody>
 </table>
 </div>
+
+
+
+
+```python
+model_best.predict(obs)
+```
+
+
+
+
+    array([1])
 
 
 
@@ -2184,7 +2257,123 @@ outcome
 
 
 
-    array([[9.99434577e-01, 5.65423097e-04]])
+    array([[0.42197997, 0.57802003]])
+
+
+
+
+```python
+X_train.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>workclass</th>
+      <th>education</th>
+      <th>marital-status</th>
+      <th>occupation</th>
+      <th>race</th>
+      <th>sex</th>
+      <th>capital-gain</th>
+      <th>capital-loss</th>
+      <th>hours-per-week</th>
+      <th>native-country</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>39</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2174</td>
+      <td>0</td>
+      <td>40</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>50</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>13</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>38</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>53</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>28</td>
+      <td>0</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>40</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
 
