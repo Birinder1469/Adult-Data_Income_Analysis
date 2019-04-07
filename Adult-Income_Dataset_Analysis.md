@@ -1575,8 +1575,8 @@ print('The Test score is : ',"{00:.2f}%".format(round(model.score(X_test, y_test
 
 ```
 
-    The train score is :  93.60%
-    The Test score is :  83.92%
+    The train score is :  93.49%
+    The Test score is :  84.14%
     
 
 
@@ -1598,7 +1598,7 @@ print('The Best Features for Random Forest Are : ',model_grid.best_params_)
 
 
 ```python
-model_best=RandomForestClassifier(max_features=8, max_depth=11, random_state=123)
+model_best=RandomForestClassifier(max_features=8, max_depth=11, random_state=213)
 
 model_best.fit(X_train,y_train)
 print('The train score is : ', "{00:.2f}%".format(round(model_best.score(X_train, y_train),4)*100))
@@ -1609,8 +1609,8 @@ test_acc_rf="{00:.2f}%".format(round(model_best.score(X_test, y_test),4)*100)
 
 ```
 
-    The train score is :  87.26%
-    The Test score is :  86.30%
+    The train score is :  87.44%
+    The Test score is :  86.36%
     
 
 
@@ -1631,8 +1631,8 @@ cf_rf
 
 
 
-    array([[11806,   629],
-           [ 1447,  2399]], dtype=int64)
+    array([[11703,   732],
+           [ 1488,  2358]], dtype=int64)
 
 
 
@@ -1676,7 +1676,7 @@ model_grid_lr.fit(X_train,y_train)
 print('The Best Features for Logistic Regression are : ',model_grid_lr.best_params_)
 ```
 
-    The Best Features for Logistic Regression are :  {'C': 1.0, 'penalty': 'l1'}
+    The Best Features for Logistic Regression are :  {'C': 10.0, 'penalty': 'l1'}
     
 
 
@@ -1691,7 +1691,7 @@ test_acc_lr="{00:.2f}%".format(round(model_lr_best.score(X_test, y_test),4)*100)
 ```
 
     The train score is :  82.88%
-    The Test score is :  82.73%
+    The Test score is :  82.74%
     
 
 ## Confusion Matrix Logistic Regression 
@@ -1706,8 +1706,8 @@ cf_lr
 
 
 
-    array([[11712,   723],
-           [ 2089,  1757]], dtype=int64)
+    array([[11718,   717],
+           [ 2093,  1753]], dtype=int64)
 
 
 
@@ -1718,7 +1718,7 @@ cf_lr
 model_xgb=XGBClassifier(n_estimators=30,booster='gbtree')
 parameters_xgb=dict({'max_depth':np.arange(1,30), 'learning_rate':np.arange(0,1,0.01)})
 
-model_xgb_rs=RandomizedSearchCV(model_xgb,parameters_xgb,cv=5,n_iter=20,n_jobs=-1, random_state=123)
+model_xgb_rs=RandomizedSearchCV(model_xgb,parameters_xgb,cv=5,n_iter=20,n_jobs=-1, random_state=21)
 ```
 
 
@@ -1728,12 +1728,12 @@ model_xgb_rs.fit(X_train,y_train)
 print('The best parameters for XG Boost are : ',model_xgb_rs.best_params_ )
 ```
 
-    The best parameters for XG Boost are :  {'max_depth': 4, 'learning_rate': 0.85}
+    The best parameters for XG Boost are :  {'max_depth': 3, 'learning_rate': 0.5}
     
 
 
 ```python
-model_xgb_best=XGBClassifier(learning_rate=0.85, max_depth=4, n_estimators=30, booster='gbtree', random_state=123)
+model_xgb_best=XGBClassifier(learning_rate=0.5, max_depth=3, n_estimators=30, booster='gbtree', random_state=21)
 model_xgb_best.fit(X_train,y_train)
 print('The train score is : ', "{00:.2f}%".format(round(model_xgb_best.score(X_train, y_train),4)*100))
 print('The Test score is : ',"{00:.2f}%".format(round(model_xgb_best.score(X_test, y_test),4)*100))
@@ -1743,7 +1743,7 @@ test_acc_xgb="{00:.2f}%".format(round(model_xgb_best.score(X_test, y_test),4)*10
 
 ```
 
-    The train score is :  87.39%
+    The train score is :  86.82%
     The Test score is :  86.81%
     
 
@@ -1759,8 +1759,8 @@ cf_xgb
 
 
 
-    array([[11757,   678],
-           [ 1469,  2377]], dtype=int64)
+    array([[11781,   654],
+           [ 1494,  2352]], dtype=int64)
 
 
 
@@ -1775,7 +1775,10 @@ model_svm.fit(X_train,y_train)
 
 
 
-    0.9209790854089248
+    SVC(C=100, cache_size=200, class_weight=None, coef0=0.0,
+      decision_function_shape='ovr', degree=3, gamma='auto_deprecated',
+      kernel='rbf', max_iter=-1, probability=False, random_state=None,
+      shrinking=True, tol=0.001, verbose=False)
 
 
 
@@ -1844,19 +1847,19 @@ pd.DataFrame({'Model':['Random Forest','Logistic Regression','XGBoost', 'SVM'],
     <tr>
       <th>0</th>
       <td>Random Forest</td>
-      <td>87.26%</td>
-      <td>86.30%</td>
+      <td>87.44%</td>
+      <td>86.36%</td>
     </tr>
     <tr>
       <th>1</th>
       <td>Logistic Regression</td>
       <td>82.88%</td>
-      <td>82.73%</td>
+      <td>82.74%</td>
     </tr>
     <tr>
       <th>2</th>
       <td>XGBoost</td>
-      <td>87.39%</td>
+      <td>86.82%</td>
       <td>86.81%</td>
     </tr>
     <tr>
@@ -1885,8 +1888,8 @@ cf_rf
 
 
 
-    array([[11806,   629],
-           [ 1447,  2399]], dtype=int64)
+    array([[11703,   732],
+           [ 1488,  2358]], dtype=int64)
 
 
 
@@ -1902,8 +1905,8 @@ cf_lr
 
 
 
-    array([[11712,   723],
-           [ 2089,  1757]], dtype=int64)
+    array([[11718,   717],
+           [ 2093,  1753]], dtype=int64)
 
 
 
@@ -1919,8 +1922,8 @@ cf_xgb
 
 
 
-    array([[11757,   678],
-           [ 1469,  2377]], dtype=int64)
+    array([[11781,   654],
+           [ 1494,  2352]], dtype=int64)
 
 
 
@@ -2002,6 +2005,20 @@ pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect >50k'],
   </tbody>
 </table>
 </div>
+
+
+
+
+```python
+y_test.value_counts()
+```
+
+
+
+
+    0    12435
+    1     3846
+    Name: income_class, dtype: int64
 
 
 
