@@ -1962,8 +1962,8 @@ y_test.value_counts()
 ```python
 # Structure of Confusion matrix :
 
-pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect >50k'],
-              'Predicted >50k':['Incorrect <=50k','Correct >50k']},index=['True <=50k','True >50k'])
+pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect <= 50k'],
+              'Predicted >50k':['Incorrect > 50k','Correct >50k']},index=['True <=50k','True >50k'])
 ```
 
 
@@ -1995,11 +1995,11 @@ pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect >50k'],
     <tr>
       <th>True &lt;=50k</th>
       <td>Correct &lt;=50k</td>
-      <td>Incorrect &lt;=50k</td>
+      <td>Incorrect &gt; 50k</td>
     </tr>
     <tr>
       <th>True &gt;50k</th>
-      <td>Incorrect &gt;50k</td>
+      <td>Incorrect &lt;= 50k</td>
       <td>Correct &gt;50k</td>
     </tr>
   </tbody>

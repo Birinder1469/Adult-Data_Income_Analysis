@@ -833,13 +833,13 @@ cf_svm
 y_test.value_counts()
 
 
-# In[73]:
+# In[2]:
 
 
 # Structure of Confusion matrix :
 
-pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect >50k'],
-              'Predicted >50k':['Incorrect <=50k','Correct >50k']},index=['True <=50k','True >50k'])
+pd.DataFrame({'Predicted <=50k':['Correct <=50k','Incorrect <= 50k'],
+              'Predicted >50k':['Incorrect > 50k','Correct >50k']},index=['True <=50k','True >50k'])
 
 
 # In[296]:
