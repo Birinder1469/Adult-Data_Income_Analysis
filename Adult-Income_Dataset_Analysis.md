@@ -21,6 +21,7 @@ from xgboost import XGBClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
+from sklearn.utils.multiclass import unique_labels
 
 # Misc libraries
 import pickle
@@ -758,8 +759,8 @@ education_df.sort_values(by='Education_Number')
 ```python
 # Visualization of the available data 
 
-fig = plt.figure(figsize=(15, 15))
-plt.rc('font', size=11)
+fig = plt.figure(figsize=(20, 20))
+plt.rc('font', size=15)
 plt.rc('axes', axisbelow=True)
 
 list_1=['education','marital-status','workclass','occupation','race','age','sex','income_class','relationship']
@@ -771,12 +772,14 @@ for i in list_1:
         data['age'].plot(kind='hist', bins=20,edgecolor='black',color='green',alpha=0.8)
         plt.title('Entries for age groups ')
         plt.xlabel('Age')
+        plt.xticks(rotation=90)
         plt.tight_layout()
         plt.grid()
     else :    
         sub1 = plt.subplot(3, 3, list_1.index(i)+1)
         data[i].value_counts().plot(kind='bar',color='green',alpha=0.8)
         plt.title('Counts of each level of '+ i)
+        plt.xticks(rotation=90)
         plt.grid()
 plt.savefig('Data_available_1.png', dpi=600, bbox_inches='tight')
 plt.tight_layout()
@@ -817,8 +820,8 @@ plt.show()
 ```python
 categories= ['education', 'workclass', 'marital-status', 'occupation', 'relationship','sex','race']
 
-fig = plt.figure(figsize=(15, 15))
-plt.rc('font', size=11)
+fig = plt.figure(figsize=(20, 20))
+plt.rc('font', size=15)
 
 for cat in categories:
     sub1 = plt.subplot(3, 3, categories.index(cat)+1)    
@@ -831,11 +834,11 @@ for cat in categories:
     plt.title('Proportion with >50k income per '+ cat)
 plt.savefig('Analysis_Income_prediction_1.png', dpi=600, bbox_inches='tight')   
     
-plt.rc('font', size=12)
+plt.rc('font', size=15)
 plt.figure(figsize=(40, 15))
-plt.rc('font', size=25)
+plt.rc('font', size=30)
 data.groupby('native-country').mean()['target'].plot(kind='bar',color='green',alpha=0.8)
-plt.rc('font', size=12)
+plt.rc('font', size=15)
 plt.grid()
 plt.tight_layout()
 plt.savefig('Analysis_Income_prediction.png', dpi=600, bbox_inches='tight')
@@ -1575,8 +1578,8 @@ print('The Test score is : ',"{00:.2f}%".format(round(model.score(X_test, y_test
 
 ```
 
-    The train score is :  93.49%
-    The Test score is :  84.14%
+    The train score is :  93.58%
+    The Test score is :  83.99%
     
 
 
@@ -1593,7 +1596,7 @@ model_grid.fit(X_train,y_train)
 print('The Best Features for Random Forest Are : ',model_grid.best_params_)
 ```
 
-    The Best Features for Random Forest Are :  {'max_features': 8, 'max_depth': 11}
+    The Best Features for Random Forest Are :  {'max_features': 7, 'max_depth': 9}
     
 
 
@@ -1619,6 +1622,62 @@ test_acc_rf="{00:.2f}%".format(round(model_best.score(X_test, y_test),4)*100)
 # from RandomSearch did add value.
 ```
 
+
+```python
+def plot_confusion_matrix(y_true, y_pred, classes,
+                          normalize=True,
+                          title=None,
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix, without normalization'
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    classes = classes[unique_labels(y_true, y_pred)]
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return ax
+```
+
 ## Confusion Matrix Random Forest
 
 
@@ -1634,6 +1693,22 @@ cf_rf
     array([[11703,   732],
            [ 1488,  2358]], dtype=int64)
 
+
+
+
+```python
+plot_confusion_matrix(y_test, y_test_predicted, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.9411339  0.0588661 ]
+     [0.38689548 0.61310452]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_69_1.png)
 
 
 # Logistic regression accuracy 
@@ -1676,7 +1751,7 @@ model_grid_lr.fit(X_train,y_train)
 print('The Best Features for Logistic Regression are : ',model_grid_lr.best_params_)
 ```
 
-    The Best Features for Logistic Regression are :  {'C': 10.0, 'penalty': 'l1'}
+    The Best Features for Logistic Regression are :  {'C': 100.0, 'penalty': 'l1'}
     
 
 
@@ -1691,7 +1766,7 @@ test_acc_lr="{00:.2f}%".format(round(model_lr_best.score(X_test, y_test),4)*100)
 ```
 
     The train score is :  82.88%
-    The Test score is :  82.74%
+    The Test score is :  82.72%
     
 
 ## Confusion Matrix Logistic Regression 
@@ -1706,9 +1781,25 @@ cf_lr
 
 
 
-    array([[11718,   717],
-           [ 2093,  1753]], dtype=int64)
+    array([[11711,   724],
+           [ 2089,  1757]], dtype=int64)
 
+
+
+
+```python
+plot_confusion_matrix(y_test, y_test_predicted_lr, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.94177724 0.05822276]
+     [0.54316173 0.45683827]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_77_1.png)
 
 
 # XG Boost 
@@ -1764,6 +1855,22 @@ cf_xgb
 
 
 
+
+```python
+plot_confusion_matrix(y_test, y_test_predicted_xgb, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.94740651 0.05259349]
+     [0.38845554 0.61154446]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_84_1.png)
+
+
 # Support Vectore Machines 
 
 
@@ -1803,6 +1910,22 @@ cf_svm
     array([[11298,  1137],
            [ 1633,  2213]], dtype=int64)
 
+
+
+
+```python
+plot_confusion_matrix(y_test, y_test_prediction_svm, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.90856454 0.09143546]
+     [0.42459698 0.57540302]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_90_1.png)
 
 
 
@@ -1854,7 +1977,7 @@ pd.DataFrame({'Model':['Random Forest','Logistic Regression','XGBoost', 'SVM'],
       <th>1</th>
       <td>Logistic Regression</td>
       <td>82.88%</td>
-      <td>82.74%</td>
+      <td>82.72%</td>
     </tr>
     <tr>
       <th>2</th>
@@ -1895,6 +2018,22 @@ cf_rf
 
 
 ```python
+plot_confusion_matrix(y_test, y_test_predicted, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, Random Forest ')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.9411339  0.0588661 ]
+     [0.38689548 0.61310452]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_95_1.png)
+
+
+
+```python
 print('Logistic Regression Confusion Matrix')
 cf_lr
 ```
@@ -1908,6 +2047,22 @@ cf_lr
     array([[11718,   717],
            [ 2093,  1753]], dtype=int64)
 
+
+
+
+```python
+plot_confusion_matrix(y_test, y_test_predicted_lr, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, Logistic Regression')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.94177724 0.05822276]
+     [0.54316173 0.45683827]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_97_1.png)
 
 
 
@@ -1929,6 +2084,22 @@ cf_xgb
 
 
 ```python
+plot_confusion_matrix(y_test, y_test_predicted_xgb, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, XGBoost')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.94740651 0.05259349]
+     [0.38845554 0.61154446]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_99_1.png)
+
+
+
+```python
 print('SVM Confusion Matrix')
 cf_svm
 ```
@@ -1942,6 +2113,22 @@ cf_svm
     array([[11298,  1137],
            [ 1633,  2213]], dtype=int64)
 
+
+
+
+```python
+plot_confusion_matrix(y_test, y_test_prediction_svm, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, SVM')
+plt.show()
+```
+
+    Normalized confusion matrix
+    [[0.90856454 0.09143546]
+     [0.42459698 0.57540302]]
+    
+
+
+![png](Adult-Income_Dataset_Analysis_files/Adult-Income_Dataset_Analysis_101_1.png)
 
 
 

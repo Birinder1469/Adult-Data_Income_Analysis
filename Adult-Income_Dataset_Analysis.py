@@ -3,7 +3,7 @@
 
 # # Exploratory Data Analysis - Adult Income Dataset 
 
-# In[1]:
+# In[82]:
 
 
 # Data exploration libraries
@@ -24,6 +24,7 @@ from xgboost import XGBClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
+from sklearn.utils.multiclass import unique_labels
 
 # Misc libraries
 import pickle
@@ -71,7 +72,7 @@ data.info()
 # #### The Target column contains the binary class of people above or below $50k.
 # #### Our analysis is based on evaluating given other parameters what is the Income class for the person. <br><br><br>
 
-# In[5]:
+# In[6]:
 
 
 from IPython.display import display_html
@@ -108,7 +109,7 @@ print('The categories for each feature are as follows :  ')
 display_side_by_side(df1,df2,education_df.sort_values(by='Education_Number'), df4,df5, df6,df7,df8)
 
 
-# In[6]:
+# In[7]:
 
 
 # checking the education related information 
@@ -131,13 +132,13 @@ education_df.sort_values(by='Education_Number')
 
 # ### Check how much data we have for each category in the dataset  
 
-# In[8]:
+# In[17]:
 
 
 # Visualization of the available data 
 
-fig = plt.figure(figsize=(15, 15))
-plt.rc('font', size=11)
+fig = plt.figure(figsize=(20, 20))
+plt.rc('font', size=15)
 plt.rc('axes', axisbelow=True)
 
 list_1=['education','marital-status','workclass','occupation','race','age','sex','income_class','relationship']
@@ -149,12 +150,14 @@ for i in list_1:
         data['age'].plot(kind='hist', bins=20,edgecolor='black',color='green',alpha=0.8)
         plt.title('Entries for age groups ')
         plt.xlabel('Age')
+        plt.xticks(rotation=90)
         plt.tight_layout()
         plt.grid()
     else :    
         sub1 = plt.subplot(3, 3, list_1.index(i)+1)
         data[i].value_counts().plot(kind='bar',color='green',alpha=0.8)
         plt.title('Counts of each level of '+ i)
+        plt.xticks(rotation=90)
         plt.grid()
 plt.savefig('Data_available_1.png', dpi=600, bbox_inches='tight')
 plt.tight_layout()
@@ -172,7 +175,7 @@ plt.show()
 
 # # Figure A (above)
 
-# In[9]:
+# In[18]:
 
 
 ##### The target variable contains around 24720 entries for the category of people earning <=$50k and around 
@@ -182,13 +185,13 @@ plt.show()
 
 # ### How many people are above 50k range in each category 
 
-# In[10]:
+# In[24]:
 
 
 categories= ['education', 'workclass', 'marital-status', 'occupation', 'relationship','sex','race']
 
-fig = plt.figure(figsize=(15, 15))
-plt.rc('font', size=11)
+fig = plt.figure(figsize=(20, 20))
+plt.rc('font', size=15)
 
 for cat in categories:
     sub1 = plt.subplot(3, 3, categories.index(cat)+1)    
@@ -201,11 +204,11 @@ for cat in categories:
     plt.title('Proportion with >50k income per '+ cat)
 plt.savefig('Analysis_Income_prediction_1.png', dpi=600, bbox_inches='tight')   
     
-plt.rc('font', size=12)
+plt.rc('font', size=15)
 plt.figure(figsize=(40, 15))
-plt.rc('font', size=25)
+plt.rc('font', size=30)
 data.groupby('native-country').mean()['target'].plot(kind='bar',color='green',alpha=0.8)
-plt.rc('font', size=12)
+plt.rc('font', size=15)
 plt.grid()
 plt.tight_layout()
 plt.savefig('Analysis_Income_prediction.png', dpi=600, bbox_inches='tight')
@@ -214,7 +217,7 @@ plt.show()
 
 # # Figure B (above)
 
-# In[11]:
+# In[25]:
 
 
 # Education 
@@ -225,7 +228,7 @@ plt.show()
 ##### what is the occupation for by which these people earn >50k at such young age 
 
 
-# In[12]:
+# In[26]:
 
 
 fig = plt.figure(figsize=(15, 5))
@@ -239,7 +242,7 @@ plt.grid()
 plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches='tight')
 
 
-# In[13]:
+# In[27]:
 
 
 ##### Most of the people earning >50k with education level less than 12th standard work in Private jobs 
@@ -247,7 +250,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 
 # ### Analysis per category now  from Figure B(above)
 
-# In[14]:
+# In[28]:
 
 
 # Work class
@@ -255,7 +258,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### The Self employed people have a higher proportion of being rich (>50k $) followed by people working in Federal jobs
 
 
-# In[15]:
+# In[29]:
 
 
 # Marital Status 
@@ -264,7 +267,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### containes very few entries for Armed force category hence we wont consider them as much of a valid observation 
 
 
-# In[16]:
+# In[30]:
 
 
 # Occupation 
@@ -273,7 +276,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### Some of the job categories such as Clerical jobs, farming fishing and Cleaners and handlers are not paid much
 
 
-# In[17]:
+# In[31]:
 
 
 # Relation ship 
@@ -283,7 +286,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### because of which the proportion is a little misleading 
 
 
-# In[18]:
+# In[32]:
 
 
 # Gender
@@ -291,7 +294,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### The proportion of males with high income is more than the females 
 
 
-# In[19]:
+# In[33]:
 
 
 # Native Country 
@@ -301,7 +304,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 ##### Again its worth noting that the data for each of these countries is too less to make a sane judgement. 
 
 
-# In[20]:
+# In[34]:
 
 
 # Race 
@@ -312,7 +315,7 @@ plt.savefig('Analysis_Income_prediction_work_profile.png', dpi=600, bbox_inches=
 
 # ### Checking Distribution of income among different age groups 
 
-# In[21]:
+# In[35]:
 
 
 fig = plt.figure(figsize=(15, 6))
@@ -329,7 +332,7 @@ plt.savefig('Analysis_Income_predictionAge.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-# In[22]:
+# In[36]:
 
 
 # Income vs Age 
@@ -339,13 +342,13 @@ plt.show()
 ##### to the employment 
 
 
-# In[23]:
+# In[37]:
 
 
 ### Checking Distribution of income with the number of hours worked weekly 
 
 
-# In[24]:
+# In[38]:
 
 
 fig = plt.figure(figsize=(40, 20))
@@ -357,7 +360,7 @@ plt.grid()
 ax.savefig("Analysis_Income_prediction_workhours.png")
 
 
-# In[25]:
+# In[39]:
 
 
 # Hours per week
@@ -366,7 +369,7 @@ ax.savefig("Analysis_Income_prediction_workhours.png")
 ##### This goes up to 100 as well but there are less of such peopl.
 
 
-# In[26]:
+# In[40]:
 
 
 # Race 
@@ -376,7 +379,7 @@ ax.savefig("Analysis_Income_prediction_workhours.png")
 ##### data ~28% Asian Pac Islander earn greater than $50k
 
 
-# In[27]:
+# In[41]:
 
 
 data_gain_loss=data.loc[:,['capital-gain',
@@ -387,13 +390,13 @@ data_gain_loss.head()
 
 # # Model fitting data preparation  
 
-# In[28]:
+# In[42]:
 
 
 # Converting the object variable types to integer for further analysis
 
 
-# In[29]:
+# In[43]:
 
 
 header_list=['age','workclass','fnlwgt','education','education-num','marital-status',
@@ -409,7 +412,7 @@ print('Shape of Train dataset is : ', train_data.shape)
 
 # ### Now lets bring in the Test Dataset we had kept hidden till now
 
-# In[30]:
+# In[46]:
 
 
 test_data=pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test',
@@ -419,7 +422,7 @@ test_data.head(2)
 print('Shape of Test dataset is : ',test_data.shape)
 
 
-# In[31]:
+# In[47]:
 
 
 test_data.income_class.unique()
@@ -428,13 +431,13 @@ test_data.income_class.unique()
 # ### Concatenating the Train and Test data set to bring in correct shape for training Machine Learning model.
 # ### Dont worry we will keep Test data separate while training. <br>
 
-# In[32]:
+# In[48]:
 
 
 data=pd.concat([train_data,test_data])
 
 
-# In[33]:
+# In[49]:
 
 
 # Assigning Male and Females : 1 and 0 Integer Values
@@ -442,7 +445,7 @@ data=pd.concat([train_data,test_data])
 data['sex']=data['sex'].map({' Male':1,' Female':0}).astype(int)
 
 
-# In[34]:
+# In[50]:
 
 
 # Data set is skewed towards White race hence two categories look ok. 1 for White and 0 for the rest.
@@ -451,7 +454,7 @@ data['race']=data['race'].map({' White':1,' Black':0, ' Asian-Pac-Islander':0, '
        ' Other':0}).astype(int)
 
 
-# In[35]:
+# In[51]:
 
 
 # The income range looks distinct for students upto standard 12th education, then Associates and then people with 
@@ -471,7 +474,7 @@ data['education']=data['education'].map({'Lower_Edu':0,'Middle_Edu':1,'Higher_Ed
     
 
 
-# In[36]:
+# In[52]:
 
 
 # All the native United States belong to category 1 and the rest belong to 0
@@ -479,7 +482,7 @@ data['education']=data['education'].map({'Lower_Edu':0,'Middle_Edu':1,'Higher_Ed
 data['native-country']=np.where(data['native-country']==' United-States', 1, 0).astype(int)
 
 
-# In[37]:
+# In[53]:
 
 
 # The people working in government belong to category 2, those involved in Private jobs have category 0 and rest of them
@@ -494,7 +497,7 @@ data["workclass"] = data["workclass"].replace([' Self-emp-not-inc', ' Self-emp-i
 data["workclass"] = data["workclass"].map({" Private":0, "Self":1, "Gov":2, ' ?':-1}).astype(int)
 
 
-# In[38]:
+# In[54]:
 
 
 # Assigning the categories to the occupations. Some occupations are believed to be earning high so i assigned 
@@ -515,7 +518,7 @@ data["occupation"] = data["occupation"].replace([' Priv-house-serv', ' Farming-f
 data["occupation"] = data["occupation"].map({"LowPay":0, "MiddlePay":1, "HighPay":2, ' ?':-1}).astype(int)
 
 
-# In[39]:
+# In[55]:
 
 
 # For the marital status i have assigned three categories. The unmarried people. The people in marriage and 
@@ -532,13 +535,13 @@ data["marital-status"] = data["marital-status"].replace([' Divorced', ' Married-
 data["marital-status"] = data["marital-status"].map({"Single":0, "Couple":1, "Separated":2}).astype(int)
 
 
-# In[40]:
+# In[56]:
 
 
 data.shape
 
 
-# In[41]:
+# In[57]:
 
 
 
@@ -548,25 +551,25 @@ data['income_class']=data['income_class'].replace([' >50K',  ' >50K.'],'>50K')
 data["income_class"] = data["income_class"].map({'>50K':1, '<=50K':0}).astype(int)
 
 
-# In[42]:
+# In[58]:
 
 
 data.head()
 
 
-# In[43]:
+# In[59]:
 
 
 data=data.drop(['fnlwgt', 'relationship','education-num'], axis=1);
 
 
-# In[44]:
+# In[60]:
 
 
 data.head()
 
 
-# In[45]:
+# In[61]:
 
 
 # I will use this train data for the model building
@@ -574,7 +577,7 @@ data.head()
 train_dataset=data.iloc[0:32561,]
 
 
-# In[46]:
+# In[62]:
 
 
 # I will keep this test dataset aside 
@@ -582,7 +585,7 @@ train_dataset=data.iloc[0:32561,]
 test_dataset=data.iloc[32561:48842,]
 
 
-# In[47]:
+# In[63]:
 
 
 X_train=train_dataset.drop(['income_class'],axis=1)
@@ -599,7 +602,7 @@ y_train=train_dataset['income_class']
 # ##### After the final model is chosen, I will train the model on the combined train and test data ( 32561 + 16281 = 48842 entries ) <br>
 # ##### and then deploy it on Heroku Cloud Platform <br>
 
-# In[269]:
+# In[64]:
 
 
 # Creating X_test and y_test for testing scores of models  
@@ -610,7 +613,7 @@ y_test=test_dataset['income_class']
 
 # # Random Forest Classifier
 
-# In[270]:
+# In[65]:
 
 
 model=RandomForestClassifier()
@@ -620,7 +623,7 @@ print('The train score is : ', "{00:.2f}%".format(round(model.score(X_train, y_t
 print('The Test score is : ',"{00:.2f}%".format(round(model.score(X_test, y_test),4)*100))
 
 
-# In[271]:
+# In[66]:
 
 
 # Applying Randomized search to find the optimum parameters 
@@ -635,7 +638,7 @@ model_grid.fit(X_train,y_train)
 print('The Best Features for Random Forest Are : ',model_grid.best_params_)
 
 
-# In[272]:
+# In[67]:
 
 
 model_best=RandomForestClassifier(max_features=8, max_depth=11, random_state=213)
@@ -648,16 +651,73 @@ train_acc_rf="{00:.2f}%".format(round(model_best.score(X_train, y_train),4)*100)
 test_acc_rf="{00:.2f}%".format(round(model_best.score(X_test, y_test),4)*100)
 
 
-# In[273]:
+# In[70]:
 
 
 # There is improvement in the Test Accuracy from 84.12% to 86.30% which is good sign that our hyper parameter selection 
 # from RandomSearch did add value.
 
 
+# In[86]:
+
+
+def plot_confusion_matrix(y_true, y_pred, classes,
+                          normalize=True,
+                          title=None,
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix, without normalization'
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    classes = classes[unique_labels(y_true, y_pred)]
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return ax
+
+
 # ## Confusion Matrix Random Forest
 
-# In[274]:
+# In[71]:
 
 
 y_test_predicted=model_best.predict(X_test)
@@ -665,23 +725,31 @@ cf_rf=confusion_matrix(y_test,y_test_predicted)
 cf_rf
 
 
+# In[121]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+
+
 # # Logistic regression accuracy 
 
-# In[275]:
+# In[91]:
 
 
 model_lr=LogisticRegression()
 model_lr.fit(X_train,y_train)
 
 
-# In[276]:
+# In[92]:
 
 
 print('The train score is : ', "{00:.2f}%".format(round(model_lr.score(X_train, y_train),4)*100))
 print('The Test score is : ',"{00:.2f}%".format(round(model_lr.score(X_test, y_test),4)*100))
 
 
-# In[277]:
+# In[93]:
 
 
 param_dist = dict({'C' : np.logspace(-3,3,7), "penalty":["l1","l2"]})
@@ -694,7 +762,7 @@ model_grid_lr.fit(X_train,y_train)
 print('The Best Features for Logistic Regression are : ',model_grid_lr.best_params_)
 
 
-# In[278]:
+# In[94]:
 
 
 model_lr_best=LogisticRegression(C=10, penalty='l1')
@@ -708,7 +776,7 @@ test_acc_lr="{00:.2f}%".format(round(model_lr_best.score(X_test, y_test),4)*100)
 
 # ## Confusion Matrix Logistic Regression 
 
-# In[279]:
+# In[95]:
 
 
 y_test_predicted_lr=model_lr_best.predict(X_test)
@@ -716,9 +784,17 @@ cf_lr=confusion_matrix(y_test,y_test_predicted_lr)
 cf_lr
 
 
+# In[122]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted_lr, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+
+
 # # XG Boost 
 
-# In[280]:
+# In[97]:
 
 
 model_xgb=XGBClassifier(n_estimators=30,booster='gbtree')
@@ -727,7 +803,7 @@ parameters_xgb=dict({'max_depth':np.arange(1,30), 'learning_rate':np.arange(0,1,
 model_xgb_rs=RandomizedSearchCV(model_xgb,parameters_xgb,cv=5,n_iter=20,n_jobs=-1, random_state=21)
 
 
-# In[281]:
+# In[98]:
 
 
 model_xgb_rs.fit(X_train,y_train)
@@ -735,7 +811,7 @@ model_xgb_rs.fit(X_train,y_train)
 print('The best parameters for XG Boost are : ',model_xgb_rs.best_params_ )
 
 
-# In[282]:
+# In[99]:
 
 
 model_xgb_best=XGBClassifier(learning_rate=0.5, max_depth=3, n_estimators=30, booster='gbtree', random_state=21)
@@ -749,7 +825,7 @@ test_acc_xgb="{00:.2f}%".format(round(model_xgb_best.score(X_test, y_test),4)*10
 
 # ## Confusion Matrix XGB
 
-# In[283]:
+# In[100]:
 
 
 y_test_predicted_xgb=model_xgb_best.predict(X_test)
@@ -757,16 +833,24 @@ cf_xgb=confusion_matrix(y_test,y_test_predicted_xgb)
 cf_xgb
 
 
+# In[123]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted_xgb, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+
+
 # # Support Vectore Machines 
 
-# In[284]:
+# In[101]:
 
 
 model_svm=SVC(C=100)
 model_svm.fit(X_train,y_train)
 
 
-# In[285]:
+# In[102]:
 
 
 train_acc_svm="{00:.2f}%".format(round(model_svm.score(X_train,y_train),4)*100)
@@ -775,7 +859,7 @@ test_acc_svm="{00:.2f}%".format(round(model_svm.score(X_test,y_test),4)*100)
 
 # ## Confusion Matrix SVM
 
-# In[286]:
+# In[108]:
 
 
 y_test_prediction_svm=model_svm.predict(X_test)
@@ -783,13 +867,21 @@ cf_svm=confusion_matrix(y_test,y_test_prediction_svm)
 cf_svm
 
 
-# In[287]:
+# In[124]:
+
+
+plot_confusion_matrix(y_test, y_test_prediction_svm, classes=train_data.income_class.unique(),
+                      title='Confusion matrix')
+plt.show()
+
+
+# In[104]:
 
 
 # Final Model Accuracies 
 
 
-# In[288]:
+# In[112]:
 
 
 pd.DataFrame({'Model':['Random Forest','Logistic Regression','XGBoost', 'SVM'], 
@@ -806,11 +898,27 @@ print('Random Forest Confusion Matrix')
 cf_rf
 
 
+# In[119]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, Random Forest ')
+plt.show()
+
+
 # In[290]:
 
 
 print('Logistic Regression Confusion Matrix')
 cf_lr
+
+
+# In[120]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted_lr, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, Logistic Regression')
+plt.show()
 
 
 # In[291]:
@@ -820,11 +928,27 @@ print('XG Boost Confusion Matrix')
 cf_xgb
 
 
+# In[117]:
+
+
+plot_confusion_matrix(y_test, y_test_predicted_xgb, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, XGBoost')
+plt.show()
+
+
 # In[292]:
 
 
 print('SVM Confusion Matrix')
 cf_svm
+
+
+# In[118]:
+
+
+plot_confusion_matrix(y_test, y_test_prediction_svm, classes=train_data.income_class.unique(),
+                      title='Confusion matrix, SVM')
+plt.show()
 
 
 # In[293]:
